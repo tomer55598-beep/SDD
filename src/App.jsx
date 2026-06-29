@@ -27,70 +27,530 @@ const TASK_STATUS = {
   done: "בוצע",
 };
 
-const FOOD_ESTIMATES_PER_100G = [
-  { label: "חזה עוף מבושל", keywords: ["חזה עוף", "חזה", "chicken breast"], calories: 165, protein: 31, fat: 3.6 },
-  { label: "שניצל עוף", keywords: ["שניצל", "schnitzel"], calories: 260, protein: 18, fat: 13 },
-  { label: "עוף מבושל", keywords: ["עוף", "chicken"], calories: 190, protein: 27, fat: 8 },
-  { label: "בקר רזה/כתף", keywords: ["בקר", "בשר", "כתף", "beef"], calories: 220, protein: 27, fat: 12 },
-  { label: "קציצות בשר", keywords: ["קציצ", "כדורי בשר", "meatballs"], calories: 250, protein: 18, fat: 16 },
-  { label: "טונה במים", keywords: ["טונה", "tuna"], calories: 116, protein: 26, fat: 1 },
-  { label: "סלמון", keywords: ["סלמון", "salmon"], calories: 208, protein: 20, fat: 13 },
-  { label: "ביצה", keywords: ["ביצה", "ביצים", "egg"], calories: 143, protein: 13, fat: 10 },
-  { label: "אורז מבושל", keywords: ["אורז", "rice"], calories: 130, protein: 2.7, fat: 0.3 },
-  { label: "פסטה מבושלת", keywords: ["פסטה", "pasta"], calories: 158, protein: 5.8, fat: 0.9 },
-  { label: "תפוח אדמה", keywords: ["תפוח אדמה", "תפו״א", "תפוא", "potato"], calories: 87, protein: 1.9, fat: 0.1 },
-  { label: "בטטה", keywords: ["בטטה", "sweet potato"], calories: 86, protein: 1.6, fat: 0.1 },
-  { label: "לחם", keywords: ["לחם", "פרוסת לחם", "bread"], calories: 265, protein: 9, fat: 3.2 },
-  { label: "בגט", keywords: ["בגט", "baguette"], calories: 270, protein: 8.5, fat: 1.3 },
-  { label: "לחמניה", keywords: ["לחמניה", "לחמנייה", "bun"], calories: 280, protein: 9, fat: 4 },
-  { label: "גבינה צהובה", keywords: ["גבינה צהובה", "yellow cheese"], calories: 330, protein: 25, fat: 25 },
-  { label: "קוטג׳ 5%", keywords: ["קוטג", "קוטג׳", "cottage"], calories: 97, protein: 11, fat: 5 },
-  { label: "יוגורט/מעדן חלבון", keywords: ["יוגורט", "מעדן חלבון", "פרו", "protein yogurt"], calories: 80, protein: 10, fat: 1.5 },
-  { label: "חלב", keywords: ["חלב", "milk"], calories: 60, protein: 3.3, fat: 3 },
-  { label: "אבקת חלבון", keywords: ["אבקת חלבון", "סקופ", "protein powder"], calories: 400, protein: 78, fat: 6 },
-  { label: "ברוקולי", keywords: ["ברוקולי", "broccoli"], calories: 35, protein: 2.4, fat: 0.4 },
-  { label: "ירקות", keywords: ["ירקות", "סלט", "salad", "vegetables"], calories: 30, protein: 1.5, fat: 0.2 },
-  { label: "טחינה", keywords: ["טחינה", "tahini"], calories: 595, protein: 17, fat: 54 },
-  { label: "חומוס", keywords: ["חומוס", "hummus"], calories: 240, protein: 8, fat: 14 },
-  { label: "שמן זית", keywords: ["שמן זית", "olive oil"], calories: 884, protein: 0, fat: 100 },
-  // מתוקים וחטיפים — הערכה ל-100 גרם, הערכים משתנים לפי מוצר/טעם
-  { label: "קינדר בואנו", keywords: ["קינדר בואנו", "בואנו", "bueno", "kinder bueno"], calories: 572, protein: 8.6, fat: 37.3 },
-  { label: "קינדר שוקולד", keywords: ["קינדר שוקולד", "kinder chocolate", "קינדר אצבעות"], calories: 566, protein: 8.7, fat: 35 },
-  { label: "קינדר קאנטרי", keywords: ["קינדר קאנטרי", "קינדר country", "kinder country"], calories: 557, protein: 8.8, fat: 33 },
-  { label: "קינדר ג׳וי", keywords: ["קינדר גוי", "קינדר ג׳וי", "kinder joy"], calories: 560, protein: 7, fat: 36 },
-  { label: "M&M בוטנים", keywords: ["m&m בוטנים", "אמ אנד אמ בוטנים", "אם אנד אם בוטנים", "peanut m&m"], calories: 516, protein: 10, fat: 26 },
-  { label: "M&M שוקולד", keywords: ["m&m", "mms", "אמ אנד אמ", "אם אנד אם", "m and m"], calories: 492, protein: 4.8, fat: 19.6 },
-  { label: "סניקרס", keywords: ["סניקרס", "snickers"], calories: 488, protein: 7.5, fat: 24 },
-  { label: "טוויקס", keywords: ["טוויקס", "twix"], calories: 502, protein: 4.9, fat: 24 },
-  { label: "מארס", keywords: ["מארס", "mars"], calories: 449, protein: 4.4, fat: 17 },
-  { label: "קיטקט", keywords: ["קיטקט", "kitkat", "kit kat"], calories: 518, protein: 6.5, fat: 26 },
-  { label: "אוראו", keywords: ["אוראו", "oreo"], calories: 480, protein: 5, fat: 20 },
-  { label: "נוטלה", keywords: ["נוטלה", "nutella"], calories: 539, protein: 6.3, fat: 30.9 },
-  { label: "פסק זמן", keywords: ["פסק זמן", "pesek zman"], calories: 535, protein: 7, fat: 31 },
-  { label: "כיף כף", keywords: ["כיף כף", "kif kef", "כיפכף"], calories: 520, protein: 6, fat: 27 },
-  { label: "קליק", keywords: ["קליק", "click"], calories: 530, protein: 6.5, fat: 30 },
-  { label: "טורטית", keywords: ["טורטית", "tortit"], calories: 520, protein: 5, fat: 29 },
-  { label: "שוקולד חלב", keywords: ["שוקולד חלב", "milk chocolate"], calories: 535, protein: 7, fat: 30 },
-  { label: "שוקולד מריר", keywords: ["שוקולד מריר", "dark chocolate"], calories: 600, protein: 8, fat: 43 },
-  { label: "במבה", keywords: ["במבה", "bamba"], calories: 544, protein: 17, fat: 34 },
-  { label: "ביסלי", keywords: ["ביסלי", "bisli", "bissli"], calories: 500, protein: 8, fat: 25 },
-  { label: "דוריטוס", keywords: ["דוריטוס", "doritos"], calories: 500, protein: 7, fat: 25 },
-  { label: "תפוצ׳יפס", keywords: ["תפוציפס", "תפוצ׳יפס", "chips", "ציפס"], calories: 536, protein: 6, fat: 34 },
-  { label: "פרינגלס", keywords: ["פרינגלס", "pringles"], calories: 536, protein: 4, fat: 32 },
-  { label: "בייגלה", keywords: ["בייגלה", "pretzel", "pretzels"], calories: 380, protein: 10, fat: 4 },
-  { label: "קרמבו", keywords: ["קרמבו", "krembo"], calories: 350, protein: 3, fat: 10 },
-  { label: "גלידה", keywords: ["גלידה", "ice cream"], calories: 207, protein: 3.5, fat: 11 },
-  { label: "מילקי", keywords: ["מילקי", "milky"], calories: 135, protein: 3, fat: 5 },
-  { label: "קורנפלקס", keywords: ["קורנפלקס", "cornflakes", "דגני בוקר"], calories: 370, protein: 7, fat: 1 },
-  { label: "גרנולה", keywords: ["גרנולה", "granola"], calories: 450, protein: 10, fat: 15 },
-  { label: "חמאת בוטנים", keywords: ["חמאת בוטנים", "peanut butter"], calories: 588, protein: 25, fat: 50 },
-  { label: "אגוזים/שקדים", keywords: ["אגוזים", "שקדים", "nuts", "almonds"], calories: 600, protein: 20, fat: 52 },
-  { label: "צימוקים", keywords: ["צימוקים", "raisins"], calories: 299, protein: 3, fat: 0.5 },
-  { label: "תמרים", keywords: ["תמר", "תמרים", "dates"], calories: 277, protein: 1.8, fat: 0.2 },
-  { label: "בננה", keywords: ["בננה", "banana"], calories: 89, protein: 1.1, fat: 0.3 },
-  { label: "תפוח", keywords: ["תפוח", "apple"], calories: 52, protein: 0.3, fat: 0.2 },
-  { label: "שוקולד/חטיף מתוק כללי", keywords: ["שוקולד", "קינדר", "chocolate", "חטיף מתוק"], calories: 535, protein: 6, fat: 30 },
+const TASK_PRIORITY = {
+  high: "דחופה",
+  normal: "רגילה",
+  low: "נמוכה",
+};
+
+const FOOD_SUGGESTIONS = [
+  "שווארמה",
+  "שווארמה בצלחת",
+  "שווארמה בפיתה",
+  "שווארמה בלאפה",
+  "שווארמה בבאגט",
+  "פרגית",
+  "פרגית בפיתה",
+  "פרגית בלאפה",
+  "קבב",
+  "קבב בפיתה",
+  "קבב בצלחת",
+  "המבורגר",
+  "צ׳יזבורגר",
+  "נקניקיה",
+  "סטייק",
+  "אנטריקוט",
+  "סינטה",
+  "אסאדו",
+  "חזה עוף",
+  "עוף",
+  "כרעיים",
+  "כנפיים",
+  "שניצל",
+  "שניצלונים",
+  "חזה עוף על האש",
+  "קציצות",
+  "כדורי בשר",
+  "צלי בקר",
+  "גולאש",
+  "בשר טחון",
+  "עראייס",
+  "מעורב ירושלמי",
+  "חמין",
+  "טונה",
+  "סלמון",
+  "דג לבן",
+  "אמנון",
+  "נסיכת הנילוס",
+  "דניס",
+  "חביתה",
+  "ביצה",
+  "ביצים",
+  "מקושקשת",
+  "שקשוקה",
+  "פיצה",
+  "משולש פיצה",
+  "פיצה משפחתית",
+  "פיצה אישית",
+  "פיצה מרגריטה",
+  "פיצה פפרוני",
+  "פיצה טונה",
+  "פיצה פטריות",
+  "פיצה זיתים",
+  "פוקאצ׳ה",
+  "טוסט",
+  "טוסט גבינה",
+  "טוסט נקניק",
+  "בורקס",
+  "בורקס גבינה",
+  "בורקס תפוח אדמה",
+  "מלאווח",
+  "ג׳חנון",
+  "פיתה",
+  "לאפה",
+  "באגט",
+  "לחם",
+  "לחמניה",
+  "חלה",
+  "טורטייה",
+  "ראפ",
+  "קרואסון",
+  "מאפה גבינה",
+  "סושי",
+  "רול סושי",
+  "סושי סלמון",
+  "סושי טונה",
+  "סושי צמחוני",
+  "ניגירי",
+  "מאקי",
+  "אינסייד אאוט",
+  "קומבינציית סושי",
+  "פוקי",
+  "פוקי סלמון",
+  "פוקי טונה",
+  "אורז סושי",
+  "אצות",
+  "אדממה",
+  "גיוזה",
+  "מוקפץ",
+  "מוקפץ עוף",
+  "מוקפץ בקר",
+  "מוקפץ ירקות",
+  "נודלס",
+  "פאד תאי",
+  "ראמן",
+  "אטריות",
+  "אורז מוקפץ",
+  "עוף חמוץ מתוק",
+  "עוף טריאקי",
+  "עוף בקארי",
+  "קארי עוף",
+  "עוף קארי עם אורז",
+  "קארי ירוק",
+  "קארי אדום",
+  "קארי תאילנדי",
+  "עוף במסאלה",
+  "עוף טיקה",
+  "צ׳יקן טיקה",
+  "עוף חמאה",
+  "אורז עם עוף",
+  "עוף עם תפוחי אדמה",
+  "פלאפל",
+  "פלאפל בפיתה",
+  "פלאפל בצלחת",
+  "חומוס",
+  "חומוס גרגירים",
+  "חומוס פול",
+  "טחינה",
+  "סביח",
+  "סלט",
+  "סלט ירקות",
+  "סלט יווני",
+  "סלט טונה",
+  "סלט עוף",
+  "ירקות",
+  "מלפפון",
+  "עגבניה",
+  "פלפל",
+  "בצל",
+  "חסה",
+  "כרוב",
+  "גזר",
+  "ברוקולי",
+  "כרובית",
+  "שעועית ירוקה",
+  "תירס",
+  "אפונה",
+  "אורז",
+  "אורז לבן",
+  "אורז מלא",
+  "פתיתים",
+  "קוסקוס",
+  "בורגול",
+  "קינואה",
+  "פסטה",
+  "פסטה פסטו",
+  "פסטה עגבניות",
+  "פסטה בולונז",
+  "ספגטי בולונז",
+  "בולונז",
+  "רוטב בולונז",
+  "פסטה שמנת",
+  "פסטה אלפרדו",
+  "פסטה רוזה",
+  "פסטה טונה",
+  "פסטה עוף",
+  "לזניה",
+  "רביולי",
+  "ניוקי",
+  "תפוח אדמה",
+  "פירה",
+  "צ׳יפס",
+  "בטטה",
+  "עדשים",
+  "שעועית",
+  "חומוס מבושל",
+  "מרק",
+  "מרק עוף",
+  "מרק ירקות",
+  "קוטג׳",
+  "גבינה לבנה",
+  "גבינה צהובה",
+  "גבינה בולגרית",
+  "פטה",
+  "יוגורט",
+  "יוגורט חלבון",
+  "מעדן חלבון",
+  "מילקי",
+  "חלב",
+  "שוקו",
+  "סקי",
+  "שמנת",
+  "חמאה",
+  "אבקת חלבון",
+  "שייק חלבון",
+  "קינדר בואנו",
+  "קינדר שוקולד",
+  "קינדר ג׳וי",
+  "קינדר קאנטרי",
+  "M&M",
+  "M&M בוטנים",
+  "M&M שוקולד",
+  "סניקרס",
+  "טוויקס",
+  "מארס",
+  "קיטקט",
+  "אוראו",
+  "נוטלה",
+  "פסק זמן",
+  "כיף כף",
+  "קליק",
+  "טורטית",
+  "שוקולד",
+  "שוקולד חלב",
+  "שוקולד מריר",
+  "קרמבו",
+  "גלידה",
+  "ארטיק",
+  "מגנום",
+  "קורנטו",
+  "במבה",
+  "במבה נוגט",
+  "ביסלי",
+  "דוריטוס",
+  "תפוצ׳יפס",
+  "פרינגלס",
+  "בייגלה",
+  "פופקורן",
+  "גרעינים",
+  "אגוזים",
+  "שקדים",
+  "קשיו",
+  "חטיף חלבון",
+  "גרנולה",
+  "קורנפלקס",
+  "חמאת בוטנים",
+  "בננה",
+  "תפוח",
+  "תפוז",
+  "ענבים",
+  "אבטיח",
+  "מלון",
+  "תותים",
+  "מנגו",
+  "אננס",
+  "אפרסק",
+  "אגס",
+  "תמרים",
+  "צימוקים",
+  "אבוקדו",
+  "קפה",
+  "נס קפה",
+  "קפה שחור",
+  "תה",
+  "מיץ",
+  "קולה",
+  "זירו",
+  "מים",
+  "סודה"
 ];
+
+// מאגר קלוריות ממוצע ל-100 גרם. הערכים הם אומדן כללי ולא תחליף לתווית מוצר/מסעדה.
+// calories = קלוריות, protein/fat = גרמים ל-100 גרם.
+const CALORIE_DATABASE = [
+  // עוף, בשר ודגים
+  { name: "חזה עוף", aliases: ["חזה עוף", "חזה עוף על האש", "עוף בגריל", "עוף מבושל"], calories: 165, protein: 31, fat: 3.6, category: "חלבון · עוף" },
+  { name: "פרגית", aliases: ["פרגית", "פרגיות"], calories: 210, protein: 25, fat: 12, category: "חלבון · עוף" },
+  { name: "שניצל", aliases: ["שניצל", "שניצלונים", "שניצל עוף"], calories: 285, protein: 18, fat: 14, category: "חלבון · מטוגן" },
+  { name: "כרעיים עוף", aliases: ["כרעיים", "כרע עוף", "ירך עוף", "שוק עוף"], calories: 215, protein: 24, fat: 13, category: "חלבון · עוף" },
+  { name: "כנפיים", aliases: ["כנפיים", "כנפי עוף"], calories: 290, protein: 24, fat: 20, category: "חלבון · עוף" },
+  { name: "עוף בקארי", aliases: ["עוף בקארי", "קארי עוף", "עוף קארי", "קארי ירוק", "קארי אדום", "עוף במסאלה", "צ׳יקן טיקה", "עוף חמאה"], calories: 190, protein: 16, fat: 10, category: "מנה עיקרית · עוף ורוטב" },
+  { name: "עוף טריאקי", aliases: ["עוף טריאקי", "טריאקי עוף"], calories: 180, protein: 19, fat: 7, category: "מנה עיקרית · עוף ורוטב" },
+  { name: "עוף חמוץ מתוק", aliases: ["עוף חמוץ מתוק"], calories: 240, protein: 13, fat: 10, category: "מנה עיקרית · אסייתי" },
+  { name: "בקר טחון", aliases: ["בשר טחון", "בקר טחון", "בשר בקר טחון"], calories: 254, protein: 26, fat: 17, category: "חלבון · בשר" },
+  { name: "קציצות", aliases: ["קציצות", "כדורי בשר"], calories: 230, protein: 17, fat: 14, category: "חלבון · בשר" },
+  { name: "קבב", aliases: ["קבב"], calories: 260, protein: 17, fat: 20, category: "חלבון · בשר" },
+  { name: "סטייק", aliases: ["סטייק", "סינטה", "אנטריקוט", "בקר"], calories: 250, protein: 26, fat: 16, category: "חלבון · בשר" },
+  { name: "אסאדו", aliases: ["אסאדו", "שורט ריב"], calories: 340, protein: 20, fat: 28, category: "חלבון · בשר שמן" },
+  { name: "צלי בקר", aliases: ["צלי בקר", "גולאש"], calories: 210, protein: 22, fat: 12, category: "חלבון · בשר" },
+  { name: "המבורגר", aliases: ["המבורגר", "בורגר", "צ׳יזבורגר"], calories: 295, protein: 16, fat: 18, category: "מנה עיקרית · בשר" },
+  { name: "שווארמה", aliases: ["שווארמה", "שווארמה הודו", "שווארמה עוף", "שווארמה בצלחת"], calories: 260, protein: 22, fat: 17, category: "מנה עיקרית · בשר" },
+  { name: "מעורב ירושלמי", aliases: ["מעורב ירושלמי", "מעורב"], calories: 230, protein: 22, fat: 14, category: "מנה עיקרית · בשר" },
+  { name: "עראייס", aliases: ["עראייס", "ערייס"], calories: 300, protein: 14, fat: 18, category: "מנה עיקרית · בשר ומאפה" },
+  { name: "טונה במים", aliases: ["טונה", "טונה במים"], calories: 116, protein: 26, fat: 1, category: "חלבון · דגים" },
+  { name: "טונה בשמן", aliases: ["טונה בשמן"], calories: 198, protein: 29, fat: 8, category: "חלבון · דגים" },
+  { name: "סלמון", aliases: ["סלמון", "דג סלמון"], calories: 208, protein: 20, fat: 13, category: "חלבון · דגים" },
+  { name: "אמנון", aliases: ["אמנון", "מושט", "דג לבן"], calories: 128, protein: 26, fat: 3, category: "חלבון · דגים" },
+  { name: "דניס", aliases: ["דניס"], calories: 150, protein: 22, fat: 6, category: "חלבון · דגים" },
+  { name: "ביצה", aliases: ["ביצה", "ביצים", "ביצה קשה", "ביצה עין"], calories: 155, protein: 13, fat: 11, category: "חלבון · ביצים" },
+  { name: "חביתה", aliases: ["חביתה", "מקושקשת"], calories: 190, protein: 12, fat: 15, category: "חלבון · ביצים" },
+  { name: "שקשוקה", aliases: ["שקשוקה"], calories: 130, protein: 7, fat: 8, category: "מנה · ביצים" },
+
+  // פחמימות ותוספות מבושלות
+  { name: "אורז לבן מבושל", aliases: ["אורז", "אורז לבן", "אורז מבושל"], calories: 130, protein: 2.7, fat: 0.3, category: "פחמימה · תוספת" },
+  { name: "אורז מלא מבושל", aliases: ["אורז מלא"], calories: 112, protein: 2.6, fat: 0.9, category: "פחמימה · תוספת" },
+  { name: "אורז סושי", aliases: ["אורז סושי"], calories: 150, protein: 2.5, fat: 0.2, category: "פחמימה · סושי" },
+  { name: "פסטה מבושלת", aliases: ["פסטה", "ספגטי", "מקרוני", "פסטה מבושלת"], calories: 158, protein: 5.8, fat: 0.9, category: "פחמימה · פסטה" },
+  { name: "פסטה בולונז", aliases: ["בולונז", "פסטה בולונז", "ספגטי בולונז", "רוטב בולונז"], calories: 165, protein: 7, fat: 6, category: "מנה עיקרית · פסטה ובשר" },
+  { name: "פסטה פסטו", aliases: ["פסטה פסטו"], calories: 230, protein: 6, fat: 11, category: "מנה · פסטה" },
+  { name: "פסטה שמנת", aliases: ["פסטה שמנת", "פסטה אלפרדו", "פסטה רוזה"], calories: 250, protein: 7, fat: 14, category: "מנה · פסטה" },
+  { name: "לזניה", aliases: ["לזניה"], calories: 165, protein: 9, fat: 8, category: "מנה · פסטה" },
+  { name: "פתיתים מבושלים", aliases: ["פתיתים"], calories: 170, protein: 5, fat: 1.5, category: "פחמימה · תוספת" },
+  { name: "קוסקוס מבושל", aliases: ["קוסקוס"], calories: 112, protein: 3.8, fat: 0.2, category: "פחמימה · תוספת" },
+  { name: "בורגול מבושל", aliases: ["בורגול"], calories: 83, protein: 3.1, fat: 0.2, category: "פחמימה · תוספת" },
+  { name: "קינואה מבושלת", aliases: ["קינואה"], calories: 120, protein: 4.4, fat: 1.9, category: "פחמימה · תוספת" },
+  { name: "תפוח אדמה", aliases: ["תפוח אדמה", "תפוא", "תפוחי אדמה"], calories: 87, protein: 1.9, fat: 0.1, category: "פחמימה · ירק עמילני" },
+  { name: "פירה", aliases: ["פירה"], calories: 110, protein: 2, fat: 4, category: "פחמימה · תוספת" },
+  { name: "בטטה", aliases: ["בטטה"], calories: 86, protein: 1.6, fat: 0.1, category: "פחמימה · ירק עמילני" },
+  { name: "צ׳יפס", aliases: ["ציפס", "צ׳יפס", "תפוחי אדמה מטוגנים"], calories: 312, protein: 3.4, fat: 15, category: "פחמימה · מטוגן" },
+  { name: "נודלס", aliases: ["נודלס", "אטריות"], calories: 190, protein: 5, fat: 7, category: "פחמימה · אסייתי" },
+  { name: "מוקפץ", aliases: ["מוקפץ", "מוקפץ עוף", "מוקפץ בקר", "מוקפץ ירקות"], calories: 170, protein: 8, fat: 6, category: "מנה עיקרית · אסייתי" },
+  { name: "פאד תאי", aliases: ["פאד תאי", "פד תאי"], calories: 215, protein: 9, fat: 9, category: "מנה עיקרית · אסייתי" },
+  { name: "ראמן", aliases: ["ראמן"], calories: 90, protein: 4, fat: 3, category: "מנה · מרק נודלס" },
+
+  // לחמים ומאפים
+  { name: "לחם לבן", aliases: ["לחם", "לחם לבן", "פרוסת לחם"], calories: 265, protein: 9, fat: 3.2, category: "פחמימה · לחם" },
+  { name: "לחם מלא", aliases: ["לחם מלא"], calories: 247, protein: 13, fat: 4.2, category: "פחמימה · לחם" },
+  { name: "פיתה", aliases: ["פיתה"], calories: 275, protein: 9, fat: 1.2, category: "פחמימה · לחם" },
+  { name: "לאפה", aliases: ["לאפה"], calories: 290, protein: 8, fat: 4, category: "פחמימה · לחם" },
+  { name: "באגט", aliases: ["באגט"], calories: 270, protein: 9, fat: 1.5, category: "פחמימה · לחם" },
+  { name: "לחמניה", aliases: ["לחמניה", "לחמנייה"], calories: 270, protein: 8, fat: 4, category: "פחמימה · לחם" },
+  { name: "טורטייה", aliases: ["טורטייה", "טורטיה", "ראפ"], calories: 310, protein: 8, fat: 8, category: "פחמימה · לחם" },
+  { name: "חלה", aliases: ["חלה"], calories: 300, protein: 8, fat: 6, category: "פחמימה · לחם" },
+  { name: "קרואסון", aliases: ["קרואסון"], calories: 406, protein: 8, fat: 21, category: "מאפה" },
+  { name: "בורקס גבינה", aliases: ["בורקס", "בורקס גבינה"], calories: 330, protein: 9, fat: 20, category: "מאפה" },
+  { name: "בורקס תפוח אדמה", aliases: ["בורקס תפוח אדמה", "בורקס תפו״א"], calories: 295, protein: 6, fat: 16, category: "מאפה" },
+  { name: "מלאווח", aliases: ["מלאווח", "מלווח"], calories: 340, protein: 7, fat: 18, category: "מאפה" },
+  { name: "ג׳חנון", aliases: ["ג׳חנון", "גחנון"], calories: 360, protein: 7, fat: 18, category: "מאפה" },
+  { name: "פיצה", aliases: ["פיצה", "משולש פיצה", "פיצה מרגריטה", "פיצה פפרוני", "פיצה טונה", "פיצה פטריות", "פיצה זיתים", "פיצה אישית"], calories: 266, protein: 11, fat: 10, category: "מנה עיקרית · מאפה" },
+  { name: "טוסט גבינה", aliases: ["טוסט", "טוסט גבינה"], calories: 285, protein: 12, fat: 13, category: "מנה · מאפה" },
+
+  // ישראלי/רחוב/מנות נפוצות
+  { name: "פלאפל", aliases: ["פלאפל", "כדור פלאפל", "פלאפל בצלחת"], calories: 333, protein: 13, fat: 18, category: "קטניות · מטוגן" },
+  { name: "חומוס", aliases: ["חומוס", "חומוס גרגירים", "חומוס פול"], calories: 166, protein: 8, fat: 10, category: "קטניות · ממרח" },
+  { name: "טחינה", aliases: ["טחינה"], calories: 595, protein: 17, fat: 53, category: "שומן · ממרח" },
+  { name: "סביח", aliases: ["סביח"], calories: 230, protein: 7, fat: 12, category: "מנה · פיתה" },
+  { name: "מרק עוף", aliases: ["מרק עוף"], calories: 45, protein: 4, fat: 2, category: "מרק" },
+  { name: "מרק ירקות", aliases: ["מרק", "מרק ירקות"], calories: 35, protein: 1.5, fat: 1, category: "מרק" },
+
+  // סושי ואסייתי
+  { name: "סושי", aliases: ["סושי", "רול סושי", "אינסייד אאוט", "מאקי", "ניגירי", "קומבינציית סושי"], calories: 145, protein: 6, fat: 3, category: "מנה עיקרית · סושי" },
+  { name: "סושי סלמון", aliases: ["סושי סלמון", "רול סלמון"], calories: 160, protein: 7, fat: 5, category: "מנה עיקרית · סושי" },
+  { name: "סושי טמפורה", aliases: ["סושי טמפורה", "טמפורה"], calories: 230, protein: 6, fat: 10, category: "מנה עיקרית · סושי" },
+  { name: "פוקי סלמון", aliases: ["פוקי", "פוקי סלמון", "פוקי טונה"], calories: 155, protein: 9, fat: 5, category: "מנה עיקרית · פוקי" },
+  { name: "אדממה", aliases: ["אדממה"], calories: 121, protein: 11, fat: 5, category: "קטניות" },
+  { name: "גיוזה", aliases: ["גיוזה"], calories: 230, protein: 9, fat: 10, category: "כיסונים" },
+
+  // קטניות וירקות
+  { name: "עדשים מבושלות", aliases: ["עדשים"], calories: 116, protein: 9, fat: 0.4, category: "קטניות" },
+  { name: "שעועית מבושלת", aliases: ["שעועית", "שעועית לבנה", "שעועית אדומה"], calories: 127, protein: 8.7, fat: 0.5, category: "קטניות" },
+  { name: "חומוס מבושל", aliases: ["חומוס מבושל", "גרגירי חומוס"], calories: 164, protein: 8.9, fat: 2.6, category: "קטניות" },
+  { name: "סלט ירקות", aliases: ["סלט", "סלט ירקות", "ירקות"], calories: 25, protein: 1, fat: 0.2, category: "ירקות" },
+  { name: "מלפפון", aliases: ["מלפפון"], calories: 15, protein: 0.7, fat: 0.1, category: "ירקות" },
+  { name: "עגבניה", aliases: ["עגבניה", "עגבנייה"], calories: 18, protein: 0.9, fat: 0.2, category: "ירקות" },
+  { name: "גזר", aliases: ["גזר"], calories: 41, protein: 0.9, fat: 0.2, category: "ירקות" },
+  { name: "ברוקולי", aliases: ["ברוקולי"], calories: 35, protein: 2.4, fat: 0.4, category: "ירקות" },
+  { name: "כרובית", aliases: ["כרובית"], calories: 25, protein: 1.9, fat: 0.3, category: "ירקות" },
+  { name: "תירס", aliases: ["תירס"], calories: 96, protein: 3.4, fat: 1.5, category: "ירק עמילני" },
+  { name: "אבוקדו", aliases: ["אבוקדו"], calories: 160, protein: 2, fat: 15, category: "שומן · פרי" },
+
+  // חלב ומוצרים
+  { name: "קוטג׳ 5%", aliases: ["קוטג", "קוטג׳", "קוטג 5", "קוטג׳ 5"], calories: 97, protein: 11, fat: 5, category: "חלבון · חלב" },
+  { name: "גבינה לבנה 5%", aliases: ["גבינה לבנה", "גבינה לבנה 5"], calories: 95, protein: 9, fat: 5, category: "חלבון · חלב" },
+  { name: "גבינה צהובה", aliases: ["גבינה צהובה"], calories: 350, protein: 25, fat: 27, category: "חלב · גבינה" },
+  { name: "בולגרית/פטה", aliases: ["גבינה בולגרית", "בולגרית", "פטה"], calories: 265, protein: 14, fat: 21, category: "חלב · גבינה" },
+  { name: "יוגורט טבעי", aliases: ["יוגורט", "יוגורט טבעי"], calories: 61, protein: 3.5, fat: 3.3, category: "חלב" },
+  { name: "יוגורט חלבון", aliases: ["יוגורט חלבון", "מעדן חלבון", "פרו", "protein"], calories: 75, protein: 10, fat: 0.5, category: "חלבון · חלב" },
+  { name: "מילקי", aliases: ["מילקי"], calories: 145, protein: 3, fat: 6, category: "מתוק · חלב" },
+  { name: "חלב 3%", aliases: ["חלב", "חלב 3"], calories: 60, protein: 3.2, fat: 3, category: "שתייה · חלב" },
+  { name: "שוקו", aliases: ["שוקו"], calories: 80, protein: 3.2, fat: 2, category: "שתייה · חלב" },
+  { name: "חמאה", aliases: ["חמאה"], calories: 717, protein: 0.9, fat: 81, category: "שומן" },
+  { name: "שמנת", aliases: ["שמנת"], calories: 200, protein: 3, fat: 20, category: "חלב · שומן" },
+  { name: "אבקת חלבון", aliases: ["אבקת חלבון", "שייק חלבון"], calories: 390, protein: 78, fat: 6, category: "חלבון · אבקה" },
+
+  // חטיפים ומתוקים
+  { name: "שוקולד חלב", aliases: ["שוקולד", "שוקולד חלב"], calories: 535, protein: 7, fat: 30, category: "חטיף מתוק" },
+  { name: "שוקולד מריר", aliases: ["שוקולד מריר"], calories: 600, protein: 8, fat: 43, category: "חטיף מתוק" },
+  { name: "קינדר בואנו", aliases: ["קינדר בואנו", "bueno"], calories: 572, protein: 8.6, fat: 37, category: "חטיף מתוק" },
+  { name: "קינדר שוקולד", aliases: ["קינדר שוקולד", "קינדר"], calories: 566, protein: 8.7, fat: 35, category: "חטיף מתוק" },
+  { name: "קינדר ג׳וי", aliases: ["קינדר ג׳וי", "קינדר גוי"], calories: 560, protein: 7.5, fat: 35, category: "חטיף מתוק" },
+  { name: "M&M", aliases: ["m&m", "M&M", "אמ אנד אמ", "אם אנד אם"], calories: 492, protein: 4.3, fat: 20, category: "חטיף מתוק" },
+  { name: "M&M בוטנים", aliases: ["m&m בוטנים", "M&M בוטנים", "אמ אנד אמ בוטנים"], calories: 515, protein: 9.6, fat: 26, category: "חטיף מתוק" },
+  { name: "סניקרס", aliases: ["סניקרס", "snickers"], calories: 488, protein: 8, fat: 24, category: "חטיף מתוק" },
+  { name: "טוויקס", aliases: ["טוויקס", "twix"], calories: 502, protein: 4.9, fat: 24, category: "חטיף מתוק" },
+  { name: "מארס", aliases: ["מארס", "mars"], calories: 449, protein: 4.4, fat: 17, category: "חטיף מתוק" },
+  { name: "קיטקט", aliases: ["קיטקט", "kitkat"], calories: 518, protein: 6.5, fat: 26, category: "חטיף מתוק" },
+  { name: "אוראו", aliases: ["אוראו", "oreo"], calories: 480, protein: 5, fat: 20, category: "עוגיות" },
+  { name: "נוטלה", aliases: ["נוטלה", "nutella"], calories: 539, protein: 6.3, fat: 31, category: "ממרח מתוק" },
+  { name: "פסק זמן", aliases: ["פסק זמן"], calories: 530, protein: 7, fat: 30, category: "חטיף מתוק" },
+  { name: "כיף כף", aliases: ["כיף כף", "כיףכף"], calories: 515, protein: 7, fat: 28, category: "חטיף מתוק" },
+  { name: "קליק", aliases: ["קליק"], calories: 520, protein: 7, fat: 29, category: "חטיף מתוק" },
+  { name: "קרמבו", aliases: ["קרמבו"], calories: 340, protein: 3, fat: 10, category: "חטיף מתוק" },
+  { name: "גלידה", aliases: ["גלידה", "ארטיק", "מגנום", "קורנטו"], calories: 207, protein: 3.5, fat: 11, category: "מתוק" },
+
+  // חטיפים מלוחים ואגוזים
+  { name: "במבה", aliases: ["במבה"], calories: 536, protein: 17, fat: 34, category: "חטיף מלוח" },
+  { name: "במבה נוגט", aliases: ["במבה נוגט"], calories: 520, protein: 10, fat: 30, category: "חטיף מתוק" },
+  { name: "ביסלי", aliases: ["ביסלי"], calories: 500, protein: 9, fat: 24, category: "חטיף מלוח" },
+  { name: "דוריטוס", aliases: ["דוריטוס"], calories: 500, protein: 7, fat: 25, category: "חטיף מלוח" },
+  { name: "תפוצ׳יפס", aliases: ["תפוציפס", "תפוצ׳יפס", "ציפס שקית"], calories: 536, protein: 7, fat: 35, category: "חטיף מלוח" },
+  { name: "פרינגלס", aliases: ["פרינגלס"], calories: 536, protein: 6, fat: 34, category: "חטיף מלוח" },
+  { name: "בייגלה", aliases: ["בייגלה", "ביגלה"], calories: 380, protein: 10, fat: 4, category: "חטיף מלוח" },
+  { name: "פופקורן", aliases: ["פופקורן"], calories: 380, protein: 12, fat: 4, category: "חטיף" },
+  { name: "גרעינים", aliases: ["גרעינים", "גרעיני חמניה"], calories: 584, protein: 21, fat: 51, category: "אגוזים וזרעים" },
+  { name: "שקדים", aliases: ["שקדים"], calories: 579, protein: 21, fat: 50, category: "אגוזים" },
+  { name: "קשיו", aliases: ["קשיו"], calories: 553, protein: 18, fat: 44, category: "אגוזים" },
+  { name: "אגוזים", aliases: ["אגוזים", "אגוזי מלך"], calories: 654, protein: 15, fat: 65, category: "אגוזים" },
+  { name: "חמאת בוטנים", aliases: ["חמאת בוטנים"], calories: 588, protein: 25, fat: 50, category: "ממרח" },
+  { name: "חטיף חלבון", aliases: ["חטיף חלבון"], calories: 360, protein: 30, fat: 12, category: "חלבון · חטיף" },
+  { name: "גרנולה", aliases: ["גרנולה"], calories: 471, protein: 10, fat: 20, category: "דגנים" },
+  { name: "קורנפלקס", aliases: ["קורנפלקס", "דגני בוקר"], calories: 370, protein: 7, fat: 1.5, category: "דגנים" },
+
+  // פירות
+  { name: "בננה", aliases: ["בננה"], calories: 89, protein: 1.1, fat: 0.3, category: "פרי" },
+  { name: "תפוח", aliases: ["תפוח", "תפוח עץ"], calories: 52, protein: 0.3, fat: 0.2, category: "פרי" },
+  { name: "תפוז", aliases: ["תפוז"], calories: 47, protein: 0.9, fat: 0.1, category: "פרי" },
+  { name: "ענבים", aliases: ["ענבים"], calories: 69, protein: 0.7, fat: 0.2, category: "פרי" },
+  { name: "אבטיח", aliases: ["אבטיח"], calories: 30, protein: 0.6, fat: 0.2, category: "פרי" },
+  { name: "מלון", aliases: ["מלון"], calories: 34, protein: 0.8, fat: 0.2, category: "פרי" },
+  { name: "תותים", aliases: ["תותים", "תות"], calories: 32, protein: 0.7, fat: 0.3, category: "פרי" },
+  { name: "מנגו", aliases: ["מנגו"], calories: 60, protein: 0.8, fat: 0.4, category: "פרי" },
+  { name: "אננס", aliases: ["אננס"], calories: 50, protein: 0.5, fat: 0.1, category: "פרי" },
+  { name: "אפרסק", aliases: ["אפרסק"], calories: 39, protein: 0.9, fat: 0.3, category: "פרי" },
+  { name: "אגס", aliases: ["אגס"], calories: 57, protein: 0.4, fat: 0.1, category: "פרי" },
+  { name: "תמר", aliases: ["תמר", "תמרים"], calories: 282, protein: 2.5, fat: 0.4, category: "פרי יבש" },
+  { name: "צימוקים", aliases: ["צימוקים"], calories: 299, protein: 3.1, fat: 0.5, category: "פרי יבש" },
+
+  // שתייה ורטבים
+  { name: "קולה", aliases: ["קולה", "קוקה קולה"], calories: 42, protein: 0, fat: 0, category: "שתייה מתוקה" },
+  { name: "קולה זירו", aliases: ["זירו", "קולה זירו"], calories: 0, protein: 0, fat: 0, category: "שתייה" },
+  { name: "מיץ", aliases: ["מיץ", "מיץ תפוזים", "מיץ ענבים"], calories: 45, protein: 0.5, fat: 0.1, category: "שתייה מתוקה" },
+  { name: "בירה", aliases: ["בירה"], calories: 43, protein: 0.5, fat: 0, category: "שתייה אלכוהולית" },
+  { name: "שמן זית", aliases: ["שמן", "שמן זית"], calories: 884, protein: 0, fat: 100, category: "שומן" },
+  { name: "מיונז", aliases: ["מיונז"], calories: 680, protein: 1, fat: 75, category: "רוטב" },
+  { name: "קטשופ", aliases: ["קטשופ"], calories: 112, protein: 1.3, fat: 0.1, category: "רוטב" },
+  { name: "רוטב צ׳ילי", aliases: ["רוטב צילי", "רוטב צ׳ילי", "צילי מתוק", "צ׳ילי מתוק"], calories: 220, protein: 0.5, fat: 0.5, category: "רוטב" },
+];
+
+const CALORIE_SUGGESTIONS = Array.from(new Set(CALORIE_DATABASE.flatMap((item) => [item.name, ...(item.aliases || [])])));
+
+function getCalorieDatabaseMatch(name) {
+  const cleanedName = cleanFoodName(name);
+  const normalized = normalizeFoodText(cleanedName || name);
+  if (!normalized) return null;
+  const candidates = CALORIE_DATABASE.flatMap((item) =>
+    [item.name, ...(item.aliases || [])].map((alias) => ({ item, alias, normalizedAlias: normalizeFoodText(alias) }))
+  )
+    .filter((row) => row.normalizedAlias && (normalized.includes(row.normalizedAlias) || row.normalizedAlias.includes(normalized)))
+    .sort((a, b) => b.normalizedAlias.length - a.normalizedAlias.length);
+  return candidates[0]?.item || null;
+}
+
+function calculateNutritionFromPer100(item, grams) {
+  if (!item || !grams || grams <= 0) return null;
+  const factor = grams / 100;
+  return {
+    calories: Math.round((Number(item.calories) || 0) * factor),
+    protein: roundOne((Number(item.protein) || 0) * factor),
+    fat: roundOne((Number(item.fat) || 0) * factor),
+  };
+}
+
+function getAutoNutritionEstimate(rawName, gramsInput, savedFoods = []) {
+  const grams = getFoodGrams(rawName, gramsInput);
+  const savedMatch = getSavedFoodMatch(savedFoods, rawName);
+  if (savedMatch && savedMatch.per100 && grams) {
+    const values = calculateNutritionFromPer100(savedMatch.per100, grams);
+    if (values) {
+      return { ...values, grams, sourceName: savedMatch.name, category: savedMatch.category || "ספר מוצרים", note: `חושב לפי ${savedMatch.name} מספר המוצרים (${grams} גרם).` };
+    }
+  }
+
+  const dbMatch = getCalorieDatabaseMatch(rawName);
+  if (dbMatch && grams) {
+    const values = calculateNutritionFromPer100(dbMatch, grams);
+    return { ...values, grams, sourceName: dbMatch.name, category: dbMatch.category, note: `חושב לפי ממוצע ל-100 גרם: ${dbMatch.name}. אפשר לערוך לפני שמירה.` };
+  }
+  return null;
+}
+
+
+const COMMON_FOOD_PROFILES = [
+  { name: "שווארמה", aliases: ["שווארמה", "שווארמה בפיתה", "שווארמה בלאפה", "שווארמה בצלחת", "שווארמה בבאגט"], category: "מנה עיקרית · בשר", portionHint: "פיתה / לאפה / צלחת / גרמים", tip: "כדאי לרשום גם רטבים, צ׳יפס ותוספות אם היו." },
+  { name: "פיצה", aliases: ["פיצה", "משולש פיצה", "פיצה משפחתית", "פיצה אישית", "פיצה מרגריטה", "פיצה פפרוני", "פיצה טונה", "פיצה פטריות", "פיצה זיתים"], category: "מנה עיקרית · מאפה", portionHint: "מספר משולשים / פיצה אישית", tip: "תוספות וגבינה כפולה משנות את הערך התזונתי." },
+  { name: "סושי", aliases: ["סושי", "רול סושי", "סושי סלמון", "סושי טונה", "סושי צמחוני", "ניגירי", "מאקי", "אינסייד אאוט", "קומבינציית סושי"], category: "מנה עיקרית · דגים/אורז", portionHint: "רולים / יחידות / קומבינציה", tip: "רוטבים, טמפורה ומיונז משנים מאוד." },
+  { name: "בולונז", aliases: ["בולונז", "פסטה בולונז", "ספגטי בולונז", "רוטב בולונז"], category: "מנה עיקרית · פסטה ובשר", portionHint: "צלחת / גרמים / קופסה", tip: "אפשר לרשום בנפרד אם זו מנה עם הרבה רוטב או גבינה." },
+  { name: "עוף בקארי", aliases: ["עוף בקארי", "קארי עוף", "עוף קארי", "עוף קארי עם אורז", "קארי ירוק", "קארי אדום", "קארי תאילנדי", "עוף במסאלה", "עוף טיקה", "צ׳יקן טיקה", "עוף חמאה"], category: "מנה עיקרית · עוף ורוטב", portionHint: "צלחת / גרמים / עם אורז", tip: "רוטב קוקוס/שמנת ואורז בצד משנים את המנה." },
+  { name: "המבורגר", aliases: ["המבורגר", "צ׳יזבורגר", "בורגר", "המבורגר כפול"], category: "מנה עיקרית · בשר", portionHint: "יחידה / כפול / עם צ׳יפס", tip: "כדאי לציין רטבים, גבינה וצ׳יפס אם היו." },
+  { name: "פלאפל", aliases: ["פלאפל", "פלאפל בפיתה", "פלאפל בצלחת"], category: "מנה עיקרית · קטניות", portionHint: "פיתה / צלחת / כדורים", tip: "טחינה, צ׳יפס וסלטים יכולים לשנות את המנה." },
+  { name: "שניצל", aliases: ["שניצל", "שניצלונים", "שניצל בבאגט", "שניצל בפיתה"], category: "מנה עיקרית · עוף", portionHint: "יחידות / גרמים / בבאגט", tip: "לחם, רטבים ותוספת בצד חשובים לרישום מדויק יותר." },
+  { name: "חזה עוף", aliases: ["חזה עוף", "חזה עוף על האש", "עוף", "פרגית", "פרגית בפיתה", "פרגית בלאפה"], category: "חלבון · עוף", portionHint: "גרמים / חתיכות / מנה", tip: "שיטת בישול, שמן ורוטב יכולים לשנות." },
+  { name: "סטייק", aliases: ["סטייק", "אנטריקוט", "סינטה", "אסאדו", "צלי בקר", "בקר", "בשר טחון", "כדורי בשר", "קציצות", "גולאש"], category: "חלבון · בשר", portionHint: "גרמים / חתיכות / מנה", tip: "אחוז שומן ורוטב משפיעים מאוד." },
+  { name: "טונה", aliases: ["טונה", "סלט טונה", "טונה במים", "טונה בשמן"], category: "חלבון · דגים", portionHint: "קופסה / גרמים / סלט", tip: "כדאי לציין מים/שמן ותוספות." },
+  { name: "סלמון", aliases: ["סלמון", "דג סלמון", "דג", "אמנון", "דג לבן", "דניס", "נסיכת הנילוס"], category: "חלבון · דגים", portionHint: "פילה / גרמים / מנה", tip: "אופן הכנה ורוטב משנים." },
+  { name: "ביצים", aliases: ["ביצה", "ביצים", "חביתה", "מקושקשת", "שקשוקה"], category: "חלבון · ביצים", portionHint: "מספר ביצים / מנה", tip: "שמן, גבינה ולחם ליד משנים את הרישום." },
+  { name: "מוקפץ", aliases: ["מוקפץ", "מוקפץ עוף", "מוקפץ בקר", "מוקפץ ירקות", "נודלס", "פאד תאי", "אורז מוקפץ", "עוף טריאקי", "עוף חמוץ מתוק"], category: "מנה עיקרית · אסייתי", portionHint: "צלחת / קופסה / גרמים", tip: "רוטב, שמן וכמות נודלס/אורז משנים מאוד." },
+  { name: "פסטה", aliases: ["פסטה", "פסטה פסטו", "פסטה עגבניות", "פסטה שמנת", "פסטה אלפרדו", "פסטה רוזה", "פסטה טונה", "פסטה עוף", "לזניה", "רביולי", "ניוקי"], category: "פחמימה · פסטה", portionHint: "צלחת / גרמים / קופסה", tip: "רוטב שמנת/גבינה/שמן משנה את המנה." },
+  { name: "אורז", aliases: ["אורז", "אורז לבן", "אורז מלא", "אורז עם עוף", "אורז סושי"], category: "פחמימה · תוספת", portionHint: "כפות / כוס / גרמים", tip: "כדאי לציין אם זו תוספת או חלק ממנה." },
+  { name: "פתיתים וקוסקוס", aliases: ["פתיתים", "קוסקוס", "בורגול", "קינואה"], category: "פחמימה · תוספת", portionHint: "כוס / כפות / גרמים", tip: "רוטב/שמן יכול לשנות." },
+  { name: "לחם ומאפים", aliases: ["פיתה", "לאפה", "באגט", "לחם", "לחמניה", "חלה", "טורטייה", "ראפ", "פוקאצ׳ה", "בורקס", "בורקס גבינה", "בורקס תפוח אדמה", "מלאווח", "ג׳חנון", "קרואסון", "מאפה גבינה"], category: "פחמימה · מאפה", portionHint: "יחידה / פרוסות / חצי מנה", tip: "מילוי ותוספות חשובים." },
+  { name: "חומוס וטחינה", aliases: ["חומוס", "חומוס גרגירים", "חומוס פול", "טחינה", "סביח"], category: "מנה/תוספת · קטניות ושומן", portionHint: "צלחת / כפות / פיתה", tip: "שמן, ביצה ופיתה ליד משנים." },
+  { name: "סלט", aliases: ["סלט", "סלט ירקות", "סלט יווני", "סלט עוף", "ירקות", "מלפפון", "עגבניה", "פלפל", "חסה", "כרוב", "גזר", "ברוקולי", "כרובית", "שעועית ירוקה"], category: "ירקות", portionHint: "קערה / צלחת / גרמים", tip: "רוטב, שמן, גבינות וקרוטונים משנים." },
+  { name: "מוצרי חלב", aliases: ["קוטג׳", "גבינה לבנה", "גבינה צהובה", "גבינה בולגרית", "פטה", "יוגורט", "יוגורט חלבון", "מעדן חלבון", "מילקי", "חלב", "שוקו", "סקי", "שמנת"], category: "חלבון/חלב", portionHint: "גביע / פרוסות / גרמים", tip: "אחוז שומן וגודל גביע חשובים." },
+  { name: "אבקת חלבון", aliases: ["אבקת חלבון", "שייק חלבון", "משקה חלבון", "חטיף חלבון"], category: "חלבון · מוצר", portionHint: "סקופים / יחידה / בקבוק", tip: "במוצרים כאלה הכי טוב לשמור פעם אחת בספר מוצרים." },
+  { name: "שוקולדים וחטיפים מתוקים", aliases: ["קינדר בואנו", "קינדר שוקולד", "קינדר ג׳וי", "קינדר קאנטרי", "M&M", "M&M בוטנים", "M&M שוקולד", "סניקרס", "טוויקס", "מארס", "קיטקט", "אוראו", "נוטלה", "פסק זמן", "כיף כף", "קליק", "טורטית", "שוקולד", "שוקולד חלב", "שוקולד מריר", "קרמבו"], category: "חטיף מתוק", portionHint: "יחידה / חטיף / גרמים / חופן", tip: "במוצרים ארוזים כדאי לשמור את הערכים מהאריזה בספר מוצרים." },
+  { name: "חטיפים מלוחים", aliases: ["במבה", "במבה נוגט", "ביסלי", "דוריטוס", "תפוצ׳יפס", "פרינגלס", "בייגלה", "פופקורן", "גרעינים"], category: "חטיף מלוח", portionHint: "שקית / חופן / גרמים", tip: "גודל שקית משתנה מאוד." },
+  { name: "אגוזים", aliases: ["אגוזים", "שקדים", "קשיו", "חמאת בוטנים"], category: "שומן · נשנוש", portionHint: "חופן / כפות / גרמים", tip: "כמות קטנה יכולה להיות משמעותית, אז כדאי לרשום כמות." },
+  { name: "פירות", aliases: ["בננה", "תפוח", "תפוז", "ענבים", "אבטיח", "מלון", "תותים", "מנגו", "אננס", "אפרסק", "אגס", "תמרים", "צימוקים", "אבוקדו"], category: "פרי", portionHint: "יחידה / פרוסות / חופן / גרמים", tip: "פירות יבשים ואבוקדו שונים מפירות רגילים." },
+  { name: "שתייה", aliases: ["קפה", "נס קפה", "קפה שחור", "תה", "מיץ", "קולה", "זירו", "מים", "סודה"], category: "שתייה", portionHint: "כוס / בקבוק / פחית", tip: "שתייה מתוקה כדאי לרשום בנפרד מהמים." },
+];
+
+function getFoodProfileMatch(name) {
+  const cleanedName = cleanFoodName(name);
+  const normalized = normalizeFoodText(cleanedName || name);
+  if (!normalized) return null;
+  return COMMON_FOOD_PROFILES.find((profile) =>
+    profile.aliases.some((alias) => {
+      const normAlias = normalizeFoodText(alias);
+      return normAlias && (normalized.includes(normAlias) || normAlias.includes(normalized));
+    })
+  ) || null;
+}
+
+function getFoodProfileLabel(entry) {
+  if (!entry) return "";
+  return entry.category || entry.profileName || "";
+}
 
 function getTaskStatus(task) {
   return task.status || (task.done ? "done" : "not_done");
@@ -98,6 +558,10 @@ function getTaskStatus(task) {
 
 function isTaskDone(task) {
   return getTaskStatus(task) === "done";
+}
+
+function getTaskPriority(task) {
+  return task.priority || "normal";
 }
 
 function normalizeFoodText(text) {
@@ -134,25 +598,38 @@ function roundOne(num) {
   return Math.round(num * 10) / 10;
 }
 
-function estimateFoodMacros(name, gramsInput) {
-  const grams = getFoodGrams(name, gramsInput);
+function hasFoodNutrition(food) {
+  return food && food.hasNutrition !== false && (
+    Number.isFinite(Number(food.calories)) ||
+    Number.isFinite(Number(food.protein)) ||
+    Number.isFinite(Number(food.fat))
+  );
+}
+
+function formatFoodNutrition(food) {
+  if (!hasFoodNutrition(food)) return "נשמר ללא פרטים מספריים";
+  const calories = Number(food.calories) || 0;
+  const protein = Number(food.protein) || 0;
+  const fat = Number(food.fat) || 0;
+  return `${calories} קל׳ · ${protein} ג חלבון · ${fat} ג שומן`;
+}
+
+
+function getFoodSuggestionMatch(name) {
   const cleanedName = cleanFoodName(name);
   const normalized = normalizeFoodText(cleanedName || name);
-  if (!normalized || !grams || grams <= 0) return null;
+  if (!normalized) return null;
+  return FOOD_SUGGESTIONS.find((item) => normalized.includes(normalizeFoodText(item))) || null;
+}
 
-  const match = FOOD_ESTIMATES_PER_100G.find((item) =>
-    item.keywords.some((keyword) => normalized.includes(normalizeFoodText(keyword)))
-  );
-
-  if (!match) return null;
-  const factor = grams / 100;
-  return {
-    grams,
-    label: match.label,
-    calories: Math.round(match.calories * factor),
-    protein: roundOne(match.protein * factor),
-    fat: roundOne(match.fat * factor),
-  };
+function getSavedFoodMatch(savedFoods, name) {
+  const cleanedName = cleanFoodName(name);
+  const normalized = normalizeFoodText(cleanedName || name);
+  if (!normalized) return null;
+  return savedFoods.find((item) => {
+    const productName = normalizeFoodText(item.name);
+    return productName && (normalized.includes(productName) || productName.includes(normalized));
+  }) || null;
 }
 
 function getDateKey(d = new Date()) {
@@ -234,6 +711,8 @@ export default function DayBoard() {
 
   const [tasks, setTasks] = useState([]);
   const [newTaskText, setNewTaskText] = useState("");
+  const [newTaskPriority, setNewTaskPriority] = useState("normal");
+  const [taskFilter, setTaskFilter] = useState("open");
   const [showDueFields, setShowDueFields] = useState(false);
   const [dueDateInput, setDueDateInput] = useState("");
   const [dueTimeInput, setDueTimeInput] = useState("");
@@ -243,7 +722,7 @@ export default function DayBoard() {
   const [savedFoods, setSavedFoods] = useState([]);
   const [showLibraryModal, setShowLibraryModal] = useState(false);
   const [showLibraryForm, setShowLibraryForm] = useState(false);
-  const [libraryForm, setLibraryForm] = useState({ name: "", calories: "", protein: "", fat: "" });
+  const [libraryForm, setLibraryForm] = useState({ name: "", grams: "100", calories: "", protein: "", fat: "" });
 
   const [waterEntries, setWaterEntries] = useState([]);
   const [customWater, setCustomWater] = useState("");
@@ -258,25 +737,47 @@ export default function DayBoard() {
   dateKeyRef.current = dateKey;
 
   useEffect(() => {
-    const estimate = estimateFoodMacros(foodForm.name, foodForm.grams);
     const extractedGrams = extractGramsFromName(foodForm.name);
+    const savedMatch = getSavedFoodMatch(savedFoods, foodForm.name);
+    const autoEstimate = getAutoNutritionEstimate(foodForm.name, foodForm.grams, savedFoods);
+    const calorieDbMatch = getCalorieDatabaseMatch(foodForm.name);
+    const profileMatch = getFoodProfileMatch(foodForm.name);
+    const suggestionMatch = getFoodSuggestionMatch(foodForm.name);
     setFoodForm((prev) => {
-      let next;
-      if (estimate) {
-        next = {
-          ...prev,
-          grams: prev.grams || (extractedGrams ? String(extractedGrams) : prev.grams),
-          calories: String(estimate.calories),
-          protein: String(estimate.protein),
-          fat: String(estimate.fat),
-          autoNote: `חושב אוטומטית לפי ${estimate.label} ו-${estimate.grams} גרם. אפשר לערוך ידנית.`,
-        };
+      const next = {
+        ...prev,
+        grams: prev.grams || (extractedGrams ? String(extractedGrams) : prev.grams),
+      };
+
+      if (!prev.name.trim()) {
+        next.autoNote = "";
+      } else if (autoEstimate) {
+        next.calories = String(autoEstimate.calories ?? "");
+        next.protein = String(autoEstimate.protein ?? "");
+        next.fat = String(autoEstimate.fat ?? "");
+        next.autoNote = autoEstimate.note;
+      } else if (savedMatch) {
+        if (hasFoodNutrition(savedMatch)) {
+          if (!prev.calories) next.calories = String(savedMatch.calories ?? "");
+          if (!prev.protein) next.protein = String(savedMatch.protein ?? "");
+          if (!prev.fat) next.fat = String(savedMatch.fat ?? "");
+          next.autoNote = `זוהה מוצר שמור בספר: ${savedMatch.name}. הפרטים מולאו אוטומטית, ואפשר לערוך לפני שמירה.`;
+        } else {
+          next.autoNote = `זוהה מוצר שמור בספר: ${savedMatch.name}. אפשר להוסיף מהר בלי מספרים.`;
+        }
+      } else if (calorieDbMatch) {
+        next.autoNote = `זוהה במאגר הקלוריות: ${calorieDbMatch.name}. כתוב כמה גרם כדי שאחשב אוטומטית קלוריות, חלבון ושומן.`;
+      } else if (profileMatch) {
+        next.autoNote = `זוהה: ${profileMatch.name} · ${profileMatch.category}. אין לי חישוב מספרי למאכל הזה כרגע; אפשר להזין ידנית או לשמור בספר מוצרים.`;
+      } else if (suggestionMatch) {
+        next.autoNote = `זוהה מאכל מהרשימה: ${suggestionMatch}. אם אין חישוב אוטומטי, הזן ידנית פעם אחת ושמור בספר מוצרים.`;
       } else {
-        next = { ...prev, autoNote: prev.name.trim() && getFoodGrams(prev.name, prev.grams) ? "לא מצאתי התאמה אוטומטית. אפשר למלא ידנית." : "" };
+        next.autoNote = "מאכל לא מוכר במאגר. אפשר להזין ידנית ולשמור בספר מוצרים לפעם הבאה.";
       }
+
       return JSON.stringify(next) === JSON.stringify(prev) ? prev : next;
     });
-  }, [foodForm.name, foodForm.grams]);
+  }, [foodForm.name, foodForm.grams, savedFoods]);
 
   // initial load
   useEffect(() => {
@@ -333,7 +834,7 @@ export default function DayBoard() {
     const text = newTaskText.trim();
     if (!text) return;
     const due = dueDateInput ? { date: dueDateInput, time: dueTimeInput || null } : null;
-    const next = [...tasks, { id: uid(), text, status: "not_done", statusText: "", done: false, createdAt: Date.now(), due }];
+    const next = [...tasks, { id: uid(), text, status: "not_done", statusText: "", priority: newTaskPriority, done: false, createdAt: Date.now(), due }];
     persistTasks(next);
     setNewTaskText("");
     setDueDateInput("");
@@ -360,6 +861,11 @@ export default function DayBoard() {
     persistTasks(next);
   };
 
+  const updateTaskPriority = (id, priority) => {
+    const next = tasks.map((t) => (t.id === id ? { ...t, priority } : t));
+    persistTasks(next);
+  };
+
   const deleteTask = (id) => {
     persistTasks(tasks.filter((t) => t.id !== id));
   };
@@ -377,24 +883,44 @@ export default function DayBoard() {
     await refreshHistory();
   }, [refreshHistory]);
 
-  const addFood = () => {
+  const resetFoodForm = () => {
+    setFoodForm({ name: "", grams: "", calories: "", protein: "", fat: "", autoNote: "" });
+  };
+
+  const addFood = (mode = "detailed") => {
     const rawName = foodForm.name.trim();
     const name = cleanFoodName(rawName) || rawName;
     const grams = getFoodGrams(rawName, foodForm.grams);
-    const calories = parseFloat(foodForm.calories);
-    if (!name || isNaN(calories)) return;
+    const profile = getFoodProfileMatch(name);
+    if (!name) return;
+
+    const autoEstimate = getAutoNutritionEstimate(rawName, foodForm.grams, savedFoods);
+    const manualCalories = parseFloat(foodForm.calories);
+    const manualProtein = parseFloat(foodForm.protein);
+    const manualFat = parseFloat(foodForm.fat);
+    const calories = Number.isFinite(manualCalories) ? manualCalories : autoEstimate?.calories;
+    const protein = Number.isFinite(manualProtein) ? manualProtein : autoEstimate?.protein;
+    const fat = Number.isFinite(manualFat) ? manualFat : autoEstimate?.fat;
+    const hasDetails = Number.isFinite(calories) || Number.isFinite(protein) || Number.isFinite(fat);
+
+    if (mode === "detailed" && !hasDetails) return;
+
     const entry = {
       id: uid(),
       name,
-      grams: grams || null,
-      calories: Math.round(calories),
-      protein: parseFloat(foodForm.protein) || 0,
-      fat: parseFloat(foodForm.fat) || 0,
-      estimateNote: foodForm.autoNote || null,
+      grams: grams || autoEstimate?.grams || null,
+      profileName: profile?.name || autoEstimate?.sourceName || null,
+      category: autoEstimate?.category || profile?.category || null,
+      portionHint: profile?.portionHint || null,
+      hasNutrition: hasDetails,
+      calories: hasDetails && Number.isFinite(calories) ? Math.round(calories) : null,
+      protein: hasDetails && Number.isFinite(protein) ? roundOne(protein) : null,
+      fat: hasDetails && Number.isFinite(fat) ? roundOne(fat) : null,
+      estimateNote: hasDetails ? (autoEstimate?.note || foodForm.autoNote || null) : "נשמר בלי קלוריות/מאקרו",
       time: new Date().toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" }),
     };
     persistFood([...foodEntries, entry]);
-    setFoodForm({ name: "", grams: "", calories: "", protein: "", fat: "", autoNote: "" });
+    resetFoodForm();
   };
 
   const deleteFood = (id) => {
@@ -409,17 +935,29 @@ export default function DayBoard() {
 
   const addProductToLibrary = () => {
     const name = libraryForm.name.trim();
+    if (!name) return;
     const calories = parseFloat(libraryForm.calories);
-    if (!name || isNaN(calories)) return;
+    const protein = parseFloat(libraryForm.protein);
+    const fat = parseFloat(libraryForm.fat);
+    const grams = numberFromInput(libraryForm.grams) || 100;
+    const hasDetails = Number.isFinite(calories) || Number.isFinite(protein) || Number.isFinite(fat);
+    const per100 = hasDetails ? {
+      calories: Number.isFinite(calories) ? Math.round((calories / grams) * 100) : 0,
+      protein: Number.isFinite(protein) ? roundOne((protein / grams) * 100) : 0,
+      fat: Number.isFinite(fat) ? roundOne((fat / grams) * 100) : 0,
+    } : null;
     const product = {
       id: uid(),
       name,
-      calories: Math.round(calories),
-      protein: parseFloat(libraryForm.protein) || 0,
-      fat: parseFloat(libraryForm.fat) || 0,
+      grams,
+      per100,
+      hasNutrition: hasDetails,
+      calories: hasDetails && Number.isFinite(calories) ? Math.round(calories) : null,
+      protein: hasDetails && Number.isFinite(protein) ? roundOne(protein) : null,
+      fat: hasDetails && Number.isFinite(fat) ? roundOne(fat) : null,
     };
     persistLibrary([...savedFoods, product]);
-    setLibraryForm({ name: "", calories: "", protein: "", fat: "" });
+    setLibraryForm({ name: "", grams: "100", calories: "", protein: "", fat: "" });
     setShowLibraryForm(false);
   };
 
@@ -428,12 +966,19 @@ export default function DayBoard() {
   };
 
   const logProductFromLibrary = (product) => {
+    const hasDetails = hasFoodNutrition(product);
+    const profile = getFoodProfileMatch(product.name);
     const entry = {
       id: uid(),
       name: product.name,
-      calories: product.calories,
-      protein: product.protein,
-      fat: product.fat,
+      profileName: profile?.name || null,
+      category: profile?.category || null,
+      portionHint: profile?.portionHint || null,
+      hasNutrition: hasDetails,
+      calories: hasDetails ? product.calories : null,
+      protein: hasDetails ? product.protein : null,
+      fat: hasDetails ? product.fat : null,
+      estimateNote: hasDetails ? "נוסף מספר המוצרים" : "נשמר בלי קלוריות/מאקרו",
       time: new Date().toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" }),
     };
     persistFood([...foodEntries, entry]);
@@ -441,9 +986,9 @@ export default function DayBoard() {
 
   const foodTotals = foodEntries.reduce(
     (acc, f) => ({
-      calories: acc.calories + f.calories,
-      protein: acc.protein + f.protein,
-      fat: acc.fat + f.fat,
+      calories: acc.calories + (Number(f.calories) || 0),
+      protein: acc.protein + (Number(f.protein) || 0),
+      fat: acc.fat + (Number(f.fat) || 0),
     }),
     { calories: 0, protein: 0, fat: 0 }
   );
@@ -537,10 +1082,15 @@ export default function DayBoard() {
             tasks={tasks}
             newTaskText={newTaskText}
             setNewTaskText={setNewTaskText}
+            newTaskPriority={newTaskPriority}
+            setNewTaskPriority={setNewTaskPriority}
+            taskFilter={taskFilter}
+            setTaskFilter={setTaskFilter}
             addTask={addTask}
             toggleTask={toggleTask}
             updateTaskStatus={updateTaskStatus}
             updateTaskStatusText={updateTaskStatusText}
+            updateTaskPriority={updateTaskPriority}
             deleteTask={deleteTask}
             clearDoneTasks={clearDoneTasks}
             showDueFields={showDueFields}
@@ -651,6 +1201,37 @@ function isOverdue(due) {
   return dt.getTime() < Date.now();
 }
 
+function isDueToday(due) {
+  return Boolean(due && due.date === getDateKey());
+}
+
+function taskDueTime(task) {
+  return task.due ? new Date(`${task.due.date}T${task.due.time || "23:59"}`).getTime() : Infinity;
+}
+
+function taskPriorityRank(task) {
+  const p = getTaskPriority(task);
+  if (p === "high") return 0;
+  if (p === "normal") return 1;
+  return 2;
+}
+
+function sortTasksSmart(a, b) {
+  const aDone = isTaskDone(a);
+  const bDone = isTaskDone(b);
+  if (aDone !== bDone) return aDone ? 1 : -1;
+  const aOverdue = !aDone && isOverdue(a.due);
+  const bOverdue = !bDone && isOverdue(b.due);
+  if (aOverdue !== bOverdue) return aOverdue ? -1 : 1;
+  const aDue = taskDueTime(a);
+  const bDue = taskDueTime(b);
+  if (aDue !== bDue) return aDue - bDue;
+  const aPr = taskPriorityRank(a);
+  const bPr = taskPriorityRank(b);
+  if (aPr !== bPr) return aPr - bPr;
+  return (a.createdAt || 0) - (b.createdAt || 0);
+}
+
 function formatDue(due) {
   if (!due || !due.date) return "";
   const txt = formatShortDate(due.date);
@@ -658,18 +1239,31 @@ function formatDue(due) {
 }
 
 function TasksView({
-  tasks, newTaskText, setNewTaskText, addTask, toggleTask, updateTaskStatus, deleteTask, clearDoneTasks,
+  tasks, newTaskText, setNewTaskText, newTaskPriority, setNewTaskPriority, taskFilter, setTaskFilter,
+  addTask, toggleTask, updateTaskStatus, updateTaskStatusText, updateTaskPriority, deleteTask, clearDoneTasks,
   showDueFields, setShowDueFields, dueDateInput, setDueDateInput, dueTimeInput, setDueTimeInput,
 }) {
-  const activeTasks = tasks
-    .filter((t) => !isTaskDone(t))
-    .slice()
-    .sort((a, b) => {
-      const aTime = a.due ? new Date(`${a.due.date}T${a.due.time || "23:59"}`).getTime() : Infinity;
-      const bTime = b.due ? new Date(`${b.due.date}T${b.due.time || "23:59"}`).getTime() : Infinity;
-      return aTime - bTime;
-    });
-  const doneTasks = tasks.filter((t) => isTaskDone(t));
+  const activeTasks = tasks.filter((t) => !isTaskDone(t)).slice().sort(sortTasksSmart);
+  const doneTasks = tasks.filter((t) => isTaskDone(t)).slice().sort(sortTasksSmart);
+  const overdueTasks = activeTasks.filter((t) => isOverdue(t.due));
+  const todayTasks = activeTasks.filter((t) => isDueToday(t.due));
+  const highTasks = activeTasks.filter((t) => getTaskPriority(t) === "high");
+
+  const filterOptions = [
+    { key: "open", label: `פתוחות (${activeTasks.length})` },
+    { key: "today", label: `היום (${todayTasks.length})` },
+    { key: "high", label: `דחופות (${highTasks.length})` },
+    { key: "done", label: `בוצעו (${doneTasks.length})` },
+    { key: "all", label: `הכל (${tasks.length})` },
+  ];
+
+  const shownTasks = (() => {
+    if (taskFilter === "today") return todayTasks;
+    if (taskFilter === "high") return highTasks;
+    if (taskFilter === "done") return doneTasks;
+    if (taskFilter === "all") return tasks.slice().sort(sortTasksSmart);
+    return activeTasks;
+  })();
 
   return (
     <div>
@@ -703,6 +1297,19 @@ function TasksView({
           </button>
         </div>
 
+        <div className="mb-2">
+          <select
+            value={newTaskPriority}
+            onChange={(e) => setNewTaskPriority(e.target.value)}
+            className="w-full rounded-xl px-3 py-2 outline-none text-sm"
+            style={{ background: palette.bg, border: `1px solid ${palette.border}`, color: palette.ink }}
+          >
+            <option value="normal">עדיפות רגילה</option>
+            <option value="high">עדיפות דחופה</option>
+            <option value="low">עדיפות נמוכה</option>
+          </select>
+        </div>
+
         {showDueFields && (
           <div className="flex gap-2">
             <input
@@ -723,45 +1330,92 @@ function TasksView({
         )}
       </Card>
 
+      {tasks.length > 0 && (
+        <Card>
+          <div className="grid grid-cols-4 gap-2 text-center mb-3">
+            <MiniStat label="פתוחות" value={activeTasks.length} />
+            <MiniStat label="היום" value={todayTasks.length} />
+            <MiniStat label="דחופות" value={highTasks.length} danger={highTasks.length > 0} />
+            <MiniStat label="באיחור" value={overdueTasks.length} danger={overdueTasks.length > 0} />
+          </div>
+
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            {filterOptions.map((f) => {
+              const active = taskFilter === f.key;
+              return (
+                <button
+                  key={f.key}
+                  onClick={() => setTaskFilter(f.key)}
+                  className="rounded-xl px-3 py-1.5 text-xs whitespace-nowrap"
+                  style={{
+                    background: active ? palette.tasksAccent : palette.bg,
+                    color: active ? "#fff" : palette.mutedInk,
+                    border: `1px solid ${active ? palette.tasksAccent : palette.border}`,
+                  }}
+                >
+                  {f.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {doneTasks.length > 0 && (
+            <button onClick={clearDoneTasks} className="text-xs flex items-center gap-1 mt-3" style={{ color: palette.mutedInk }}>
+              <RotateCcw size={12} /> נקה משימות שבוצעו
+            </button>
+          )}
+        </Card>
+      )}
+
       {tasks.length === 0 && (
         <p className="text-sm text-center mt-8" style={{ color: palette.mutedInk }}>
           הרשימה פנויה. מה הדבר הראשון שצריך לעשות היום?
         </p>
       )}
 
-      {activeTasks.length > 0 && (
-        <div className="space-y-2 mb-4">
-          {activeTasks.map((task) => (
-            <TaskRow key={task.id} task={task} onToggle={() => toggleTask(task.id)} onStatusChange={(status) => updateTaskStatus(task.id, status)} onStatusTextChange={(statusText) => updateTaskStatusText(task.id, statusText)} onDelete={() => deleteTask(task.id)} />
-          ))}
-        </div>
+      {tasks.length > 0 && shownTasks.length === 0 && (
+        <p className="text-sm text-center mt-6" style={{ color: palette.mutedInk }}>
+          אין משימות להצגה בסינון הזה.
+        </p>
       )}
 
-      {doneTasks.length > 0 && (
-        <div>
-          <div className="flex items-center justify-between mb-2 px-1">
-            <span className="text-xs" style={{ color: palette.mutedInk }}>הושלמו ({doneTasks.length})</span>
-            <button onClick={clearDoneTasks} className="text-xs flex items-center gap-1" style={{ color: palette.mutedInk }}>
-              <RotateCcw size={12} /> נקה
-            </button>
-          </div>
-          <div className="space-y-2">
-            {doneTasks.map((task) => (
-              <TaskRow key={task.id} task={task} onToggle={() => toggleTask(task.id)} onStatusChange={(status) => updateTaskStatus(task.id, status)} onStatusTextChange={(statusText) => updateTaskStatusText(task.id, statusText)} onDelete={() => deleteTask(task.id)} />
-            ))}
-          </div>
+      {shownTasks.length > 0 && (
+        <div className="space-y-2 mb-4">
+          {shownTasks.map((task) => (
+            <TaskRow
+              key={task.id}
+              task={task}
+              onToggle={() => toggleTask(task.id)}
+              onStatusChange={(status) => updateTaskStatus(task.id, status)}
+              onStatusTextChange={(statusText) => updateTaskStatusText(task.id, statusText)}
+              onPriorityChange={(priority) => updateTaskPriority(task.id, priority)}
+              onDelete={() => deleteTask(task.id)}
+            />
+          ))}
         </div>
       )}
     </div>
   );
 }
 
-function TaskRow({ task, onToggle, onStatusChange, onStatusTextChange, onDelete }) {
+function MiniStat({ label, value, danger }) {
+  return (
+    <div className="rounded-xl py-2 px-1" style={{ background: danger ? "#F7E5E2" : palette.tasksAccentSoft }}>
+      <p className="text-base font-semibold" style={{ color: danger ? palette.danger : palette.tasksAccent }}>{value}</p>
+      <p className="text-[10px]" style={{ color: palette.mutedInk }}>{label}</p>
+    </div>
+  );
+}
+
+function TaskRow({ task, onToggle, onStatusChange, onStatusTextChange, onPriorityChange, onDelete }) {
   const status = getTaskStatus(task);
   const done = status === "done";
+  const priority = getTaskPriority(task);
   const overdue = !done && isOverdue(task.due);
+  const priorityColor = priority === "high" ? palette.danger : priority === "low" ? palette.mutedInk : palette.tasksAccent;
+
   return (
-    <div className="rounded-xl px-3 py-2.5" style={{ background: palette.surface, border: `1px solid ${palette.border}` }}>
+    <div className="rounded-xl px-3 py-2.5" style={{ background: palette.surface, border: `1px solid ${overdue ? palette.danger : palette.border}` }}>
       <div className="flex items-start gap-3">
         <button onClick={onToggle} style={{ color: done ? palette.tasksAccent : palette.mutedInk }}>
           {done ? <CheckSquare size={20} /> : <Square size={20} />}
@@ -773,28 +1427,49 @@ function TaskRow({ task, onToggle, onStatusChange, onStatusTextChange, onDelete 
           >
             {task.text}
           </span>
-          {task.due && task.due.date && (
-            <span className="text-[11px] flex items-center gap-1 mt-0.5" style={{ color: overdue ? palette.danger : palette.mutedInk }}>
-              <Calendar size={11} /> {formatDue(task.due)}
+          <div className="flex flex-wrap items-center gap-2 mt-0.5">
+            {task.due && task.due.date && (
+              <span className="text-[11px] flex items-center gap-1" style={{ color: overdue ? palette.danger : palette.mutedInk }}>
+                <Calendar size={11} /> {formatDue(task.due)}{overdue ? " · באיחור" : ""}
+              </span>
+            )}
+            <span className="text-[11px]" style={{ color: priorityColor }}>
+              {TASK_PRIORITY[priority] || TASK_PRIORITY.normal}
             </span>
-          )}
+          </div>
         </div>
         <button onClick={onDelete} style={{ color: palette.mutedInk }}>
           <X size={16} />
         </button>
       </div>
 
-      <div className="mt-2 flex items-center gap-2 pr-8">
-        <span className="text-[11px]" style={{ color: palette.mutedInk }}>סטטוס</span>
-        <select
-          value={status}
-          onChange={(e) => onStatusChange(e.target.value)}
-          className="flex-1 rounded-xl px-3 py-2 outline-none text-xs"
-          style={{ background: done ? palette.tasksAccentSoft : palette.bg, border: `1px solid ${palette.border}`, color: done ? palette.tasksAccent : palette.ink }}
-        >
-          <option value="not_done">לא בוצע</option>
-          <option value="done">בוצע</option>
-        </select>
+      <div className="mt-2 grid grid-cols-2 gap-2 pr-8">
+        <label className="text-[11px]" style={{ color: palette.mutedInk }}>
+          סטטוס
+          <select
+            value={status}
+            onChange={(e) => onStatusChange(e.target.value)}
+            className="mt-1 w-full rounded-xl px-3 py-2 outline-none text-xs"
+            style={{ background: done ? palette.tasksAccentSoft : palette.bg, border: `1px solid ${palette.border}`, color: done ? palette.tasksAccent : palette.ink }}
+          >
+            <option value="not_done">לא בוצע</option>
+            <option value="done">בוצע</option>
+          </select>
+        </label>
+
+        <label className="text-[11px]" style={{ color: palette.mutedInk }}>
+          עדיפות
+          <select
+            value={priority}
+            onChange={(e) => onPriorityChange(e.target.value)}
+            className="mt-1 w-full rounded-xl px-3 py-2 outline-none text-xs"
+            style={{ background: palette.bg, border: `1px solid ${palette.border}`, color: priorityColor }}
+          >
+            <option value="normal">רגילה</option>
+            <option value="high">דחופה</option>
+            <option value="low">נמוכה</option>
+          </select>
+        </label>
       </div>
 
       <div className="mt-2 pr-8">
@@ -849,18 +1524,24 @@ function FoodView({
       </button>
 
       <Card>
-        <p className="text-sm font-medium mb-1">הוספה חד-פעמית</p>
+        <p className="text-sm font-medium mb-1">הוספת אוכל</p>
         <p className="text-[11px] mb-3" style={{ color: palette.mutedInk }}>
-          כתוב מאכל וכמות בגרמים, למשל: חזה עוף 200 גרם או קינדר בואנו 43 גרם. האפליקציה תחשב הערכה אוטומטית, ואפשר לערוך לפני שמירה.
+          כתוב מאכל וכמה גרם, והאפליקציה תנסה לחשב אוטומטית קלוריות, חלבון ושומן לפי ממוצע. מאכל לא מוכר יעבור להזנה ידנית.
         </p>
         <div className="space-y-2">
           <input
             value={foodForm.name}
             onChange={(e) => setFoodForm({ ...foodForm, name: e.target.value })}
-            placeholder="מה אכלת? למשל: חזה עוף / קינדר בואנו / M&M"
+            placeholder="מה אכלת? למשל: שווארמה 200 גרם / פיצה 150 גרם"
+            list="food-suggestions"
             className="w-full rounded-xl px-3 py-2 outline-none"
             style={{ background: palette.bg, border: `1px solid ${palette.border}` }}
           />
+          <datalist id="food-suggestions">
+            {savedFoods.map((p) => <option key={`saved-${p.id}`} value={p.name} />)}
+            {CALORIE_SUGGESTIONS.map((item) => <option key={`cal-${item}`} value={item} />)}
+            {FOOD_SUGGESTIONS.map((item) => <option key={`food-${item}`} value={item} />)}
+          </datalist>
           <input
             value={foodForm.grams}
             onChange={(e) => setFoodForm({ ...foodForm, grams: e.target.value })}
@@ -874,6 +1555,7 @@ function FoodView({
               {foodForm.autoNote}
             </p>
           )}
+          <p className="text-[11px] mt-1" style={{ color: palette.mutedInk }}>פרטים אופציונליים</p>
           <div className="flex gap-2">
             <input
               value={foodForm.calories}
@@ -900,13 +1582,22 @@ function FoodView({
               style={{ background: palette.bg, border: `1px solid ${palette.border}` }}
             />
           </div>
-          <button
-            onClick={addFood}
-            className="w-full rounded-xl py-2 flex items-center justify-center gap-1 font-medium"
-            style={{ background: palette.foodAccent, color: "#fff" }}
-          >
-            <Plus size={18} /> הוסף לתפריט היום
-          </button>
+          <div className="grid grid-cols-1 gap-2">
+            <button
+              onClick={() => addFood("quick")}
+              className="w-full rounded-xl py-2 flex items-center justify-center gap-1 font-medium"
+              style={{ background: palette.foodAccent, color: "#fff" }}
+            >
+              <Plus size={18} /> הוסף / חשב אוטומטית
+            </button>
+            <button
+              onClick={() => addFood("detailed")}
+              className="w-full rounded-xl py-2 flex items-center justify-center gap-1 font-medium"
+              style={{ background: palette.foodAccentSoft, color: palette.foodAccent }}
+            >
+              <Plus size={18} /> הוסף ידנית עם פרטים
+            </button>
+          </div>
         </div>
       </Card>
 
@@ -918,8 +1609,11 @@ function FoodView({
             <div key={f.id} className="flex items-center gap-3 rounded-xl px-3 py-2.5" style={{ background: palette.surface, border: `1px solid ${palette.border}` }}>
               <div className="flex-1">
                 <p className="text-sm font-medium">{f.name}</p>
+                {getFoodProfileLabel(f) && (
+                  <p className="text-[11px] mt-0.5" style={{ color: palette.foodAccent }}>{getFoodProfileLabel(f)}</p>
+                )}
                 <p className="text-[11px]" style={{ color: palette.mutedInk }}>
-                  {f.time}{f.grams ? ` · ${f.grams} גרם` : ""} · {f.calories} קל׳ · {f.protein} ג חלבון · {f.fat} ג שומן
+                  {f.time}{f.grams ? ` · ${f.grams} גרם` : ""} · {formatFoodNutrition(f)}
                 </p>
               </div>
               <button onClick={() => deleteFood(f.id)} style={{ color: palette.mutedInk }}>
@@ -949,9 +1643,12 @@ function ProductLibraryModal({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-3 flex-shrink-0">
-          <p className="text-base font-medium flex items-center gap-1.5">
-            <BookOpen size={18} style={{ color: palette.foodAccent }} /> ספר מוצרים
-          </p>
+          <div>
+            <p className="text-base font-medium flex items-center gap-1.5">
+              <BookOpen size={18} style={{ color: palette.foodAccent }} /> ספר מוצרים
+            </p>
+            <p className="text-[11px] mt-0.5" style={{ color: palette.mutedInk }}>כל מוצר שתשמור כאן יופיע גם בהשלמה האוטומטית.</p>
+          </div>
           <button onClick={onClose} style={{ color: palette.mutedInk }}>
             <X size={20} />
           </button>
@@ -975,6 +1672,15 @@ function ProductLibraryModal({
                 className="w-full rounded-xl px-3 py-2 outline-none"
                 style={{ background: palette.bg, border: `1px solid ${palette.border}` }}
               />
+              <input
+                value={libraryForm.grams}
+                onChange={(e) => setLibraryForm({ ...libraryForm, grams: e.target.value })}
+                placeholder='לכמה גרם/מנה הערכים? למשל 100 או 45'
+                type="number"
+                className="w-full rounded-xl px-3 py-2 outline-none"
+                style={{ background: palette.bg, border: `1px solid ${palette.border}` }}
+              />
+              <p className="text-[11px]" style={{ color: palette.mutedInk }}>אם תשמור מוצר עם גרמים, בהמשך הוא יחשב אוטומטית לכל כמות שתכתוב.</p>
               <div className="flex gap-2">
                 <input
                   value={libraryForm.calories}
@@ -1013,7 +1719,7 @@ function ProductLibraryModal({
 
           {savedFoods.length === 0 ? (
             <p className="text-xs text-center py-2" style={{ color: palette.mutedInk }}>
-              עדיין אין מוצרים שמורים. הוסיפו מוצר כדי לרשום אותו בלחיצה אחת בכל פעם.
+              עדיין אין מוצרים שמורים. הוסיפו מוצר כדי לרשום אותו בלחיצה אחת בכל פעם; מוצרים שמורים יופיעו גם בהשלמה האוטומטית.
             </p>
           ) : (
             <div className="space-y-2 pb-2">
@@ -1022,7 +1728,7 @@ function ProductLibraryModal({
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{p.name}</p>
                     <p className="text-[11px]" style={{ color: palette.mutedInk }}>
-                      {p.calories} קל׳ · {p.protein} ג חלבון · {p.fat} ג שומן
+                      {formatFoodNutrition(p)}
                     </p>
                   </div>
                   <button
@@ -1082,7 +1788,7 @@ function HistoryView({ historyRows }) {
                   <div className="space-y-1">
                     {day.food.map((f) => (
                       <p key={f.id} className="text-[12px]" style={{ color: palette.mutedInk }}>
-                        {f.time} · {f.name}{f.grams ? ` · ${f.grams} גרם` : ""} · {f.calories} קל׳ · {f.protein} ג חלבון
+                        {f.time} · {f.name}{getFoodProfileLabel(f) ? ` · ${getFoodProfileLabel(f)}` : ""}{f.grams ? ` · ${f.grams} גרם` : ""} · {formatFoodNutrition(f)}
                       </p>
                     ))}
                   </div>
